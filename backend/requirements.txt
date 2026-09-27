@@ -9,3 +9,8 @@ langchain-openai>=0.2.0
 pypdf>=4.0.0
 faiss-cpu>=1.7.4
 python-dotenv>=1.0.0
+
+# Local embedding fallback used only if the primary provider (Gemini/OpenAI) fails.
+# Heavy (~1GB, pulls in torch) — if you never expect to hit that fallback in production
+# (e.g. your API key/quota is solid), you can drop this line to keep Render deploys lighter.
+sentence-transformers>=2.2.0

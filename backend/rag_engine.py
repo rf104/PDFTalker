@@ -119,10 +119,15 @@ class LangChainRAGEngine:
         if self.chunks:
             try:
                 self.vectorstore = FAISS.from_documents(self.chunks, self.embeddings)
-            except Exception as e:
-                print(f"Primary embedding failed ({e}). Switching to local HuggingFace Embeddings...")
-                self.embeddings = self._get_huggingface_embeddings()
-                self.vectorstore = FAISS.from_documents(self.chunks, self.embeddings)
+            except Exception as primary_error:
+                try:
+                    self.embeddings = self._get_huggingface_embeddings()
+                    self.vectorstore = FAISS.from_documents(self.chunks, self.embeddings)
+                except Exception as fallback_error:
+                    raise RuntimeError(
+                        f"Embedding via {self.provider} failed ({primary_error}), and the local "
+                        f"fallback also failed ({fallback_error}). Check your {self.provider} API key/quota."
+                    ) from fallback_error
 
             self.retriever = self.vectorstore.as_retriever(
                 search_type="similarity",

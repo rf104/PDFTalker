@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useState, useRef } from "react";
-import { Upload, FileText, Cpu, CheckCircle2, Loader2 } from "lucide-react";
+import React, { useState, useRef, useEffect } from "react";
+import { Upload, FileText, Cpu, CheckCircle2, Loader2, ChevronDown } from "lucide-react";
 
 interface SidebarProps {
   provider: string;
@@ -30,7 +30,14 @@ export default function Sidebar({
   uploadedFileNames,
 }: SidebarProps) {
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+  const [open, setOpen] = useState(true);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Auto-collapse on mobile once a document has been processed, so the
+  // summary/chat tabs are immediately reachable without extra scrolling.
+  useEffect(() => {
+    if (docStats) setOpen(false);
+  }, [docStats]);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
@@ -54,10 +61,22 @@ export default function Sidebar({
   };
 
   return (
-    <aside className="glass w-full lg:w-80 m-4 lg:mr-2 rounded-2xl p-5 flex flex-col gap-6 shrink-0 lg:sticky lg:top-24 lg:h-[calc(100vh-7rem)] lg:overflow-y-auto">
+    <aside className="glass lg:w-80 m-4 lg:mr-2 rounded-2xl p-5 flex flex-col gap-5 shrink-0 lg:sticky lg:top-24 lg:h-[calc(100vh-7rem)] lg:overflow-y-auto">
+      <button
+        onClick={() => setOpen((o) => !o)}
+        className="lg:hidden flex items-center justify-between gap-2 text-slate-900 font-semibold text-sm"
+      >
+        <span className="flex items-center gap-2">
+          <Cpu className="w-4 h-4 text-orange-600" />
+          Workspace Settings
+        </span>
+        <ChevronDown className={`w-4 h-4 text-slate-500 transition-transform ${open ? "rotate-180" : ""}`} />
+      </button>
+
+      <div className={`${open ? "flex" : "hidden"} lg:flex flex-col gap-6`}>
       {/* 1. Model Configuration */}
       <div className="flex flex-col gap-3">
-        <div className="flex items-center gap-2 text-slate-900 font-semibold text-sm">
+        <div className="hidden lg:flex items-center gap-2 text-slate-900 font-semibold text-sm">
           <Cpu className="w-4 h-4 text-orange-600" />
           <span>Model Settings</span>
         </div>
@@ -212,6 +231,7 @@ export default function Sidebar({
           </div>
         </>
       )}
+      </div>
     </aside>
   );
 }
