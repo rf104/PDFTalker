@@ -212,7 +212,9 @@ Open `http://localhost:3000`. The Navbar's connection indicator confirms the bac
 
 ## Environment variables
 
-Backend configuration lives in `backend/.env` (gitignored — never commit real keys). `.env.example` at the repo root documents the shape:
+### Backend (`backend/.env`, gitignored — never commit real keys)
+
+`.env.example` at the repo root documents the shape:
 
 | Variable | Required | Description |
 |---|---|---|
@@ -220,7 +222,40 @@ Backend configuration lives in `backend/.env` (gitignored — never commit real 
 | `OPENAI_API_KEY` | Yes, unless using Gemini | OpenAI API key, used as an alternative provider. |
 | `DEFAULT_PROVIDER` | No | `Google Gemini` or `OpenAI` — informational default; the actual provider used per-request is whatever the frontend sends. |
 
-The frontend has no `.env` of its own — the backend URL is currently a constant (`http://localhost:8000`) in `frontend/app/page.tsx`.
+### Frontend (`frontend/.env.local`, gitignored — `frontend/.env.example` documents it)
+
+| Variable | Required | Description |
+|---|---|---|
+| `NEXT_PUBLIC_BACKEND_URL` | No (defaults to `http://localhost:8000`) | Base URL of the FastAPI backend, no trailing slash. Must be set to your Render URL in production. |
+
+This is a **build-time** variable — Next.js inlines `NEXT_PUBLIC_*` values into the client bundle when it builds, so changing it in Vercel requires a new deployment (redeploy, don't just save).
+
+---
+
+## Deploying (Vercel + Render)
+
+### Render — backend
+
+1. New **Web Service** → point it at this repo, set **Root Directory** to `backend`.
+2. Build command: `pip install -r requirements.txt`
+3. Start command: `uvicorn main:app --host 0.0.0.0 --port $PORT`
+   (`backend/main.py` also reads `$PORT` itself if Render ever invokes `python main.py` directly, but the explicit start command above is the standard Render setup.)
+4. Add environment variables `GEMINI_API_KEY` / `OPENAI_API_KEY` (same values as your local `backend/.env`).
+5. Deploy, then note the public URL Render gives you, e.g. `https://your-service.onrender.com`.
+
+Render's free tier spins the service down after inactivity — the first request after idling can take 30–60s to respond while it cold-starts. That's expected, not a bug; the Navbar will show "Connecting…" until it answers.
+
+### Vercel — frontend
+
+1. Import this repo, set **Root Directory** to `frontend`.
+2. Add an environment variable: `NEXT_PUBLIC_BACKEND_URL` = your Render URL from above (no trailing slash).
+3. Deploy. If you add/change this variable after the first deploy, trigger a **redeploy** — it won't take effect on the existing build.
+
+### Why "frontend can't reach backend" happens
+
+`frontend/app/page.tsx` resolves the API base as `process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:8000"`. If that env var isn't set in Vercel's project settings (or was set but the project wasn't redeployed afterwards), the deployed frontend is still hardcoded to `localhost:8000` — which doesn't exist from a visitor's browser — so every request fails and the Navbar shows "Backend Offline." Setting the variable and redeploying is the fix.
+
+CORS is already permissive (`allow_origins=["*"]` in `backend/main.py`), so no additional CORS configuration is needed for the Vercel domain to reach the Render backend.
 
 ---
 
