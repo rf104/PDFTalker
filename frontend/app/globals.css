@@ -1,0 +1,127 @@
+@import "tailwindcss";
+
+:root {
+  --background: #f4f1ec;
+  --foreground: #171310;
+  --accent: #ff6b00;
+  --accent-hover: #ea580c;
+  --accent-soft: #fff4eb;
+  --glass-bg: rgba(255, 255, 255, 0.55);
+  --glass-bg-strong: rgba(255, 255, 255, 0.75);
+  --glass-border: rgba(255, 255, 255, 0.6);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  color: var(--foreground);
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: #f4f1ec;
+  background-image:
+    radial-gradient(circle at 10% 6%, rgba(255, 122, 26, 0.42), transparent 40%),
+    radial-gradient(circle at 90% 12%, rgba(255, 189, 89, 0.38), transparent 45%),
+    radial-gradient(circle at 15% 95%, rgba(255, 107, 0, 0.30), transparent 42%),
+    radial-gradient(circle at 85% 90%, rgba(56, 71, 108, 0.22), transparent 45%),
+    radial-gradient(circle at 50% 50%, rgba(255, 170, 90, 0.10), transparent 60%);
+  background-attachment: fixed;
+}
+
+/* Glassmorphism primitives */
+.glass {
+  background: var(--glass-bg);
+  backdrop-filter: blur(20px) saturate(160%);
+  -webkit-backdrop-filter: blur(20px) saturate(160%);
+  border: 1px solid var(--glass-border);
+  box-shadow: 0 8px 32px rgba(23, 19, 16, 0.08);
+}
+
+.glass-strong {
+  background: var(--glass-bg-strong);
+  backdrop-filter: blur(24px) saturate(160%);
+  -webkit-backdrop-filter: blur(24px) saturate(160%);
+  border: 1px solid var(--glass-border);
+  box-shadow: 0 8px 32px rgba(23, 19, 16, 0.08);
+}
+
+.glass-subtle {
+  background: rgba(255, 255, 255, 0.4);
+  backdrop-filter: blur(14px) saturate(150%);
+  -webkit-backdrop-filter: blur(14px) saturate(150%);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(15, 23, 42, 0.18);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(15, 23, 42, 0.32);
+}
+
+/* Markdown content formatting */
+.prose {
+  color: #171310 !important;
+  max-width: 100%;
+}
+
+.prose h1, .prose h2, .prose h3, .prose h4 {
+  color: var(--accent-hover) !important;
+  font-weight: 700;
+  margin-top: 1.25rem;
+  margin-bottom: 0.5rem;
+}
+
+.prose h3 {
+  font-size: 1.15rem;
+  border-bottom: 1px solid rgba(255, 107, 0, 0.18);
+  padding-bottom: 0.4rem;
+}
+
+.prose p {
+  color: #262119 !important;
+  line-height: 1.65;
+  margin-bottom: 0.75rem;
+  font-size: 0.95rem;
+}
+
+.prose ul, .prose ol {
+  color: #262119 !important;
+  padding-left: 1.25rem;
+  margin-bottom: 0.75rem;
+}
+
+.prose li {
+  margin-bottom: 0.35rem;
+  line-height: 1.5;
+}
+
+.prose strong {
+  color: #171310 !important;
+  font-weight: 700;
+}
+
+.prose code {
+  background-color: rgba(255, 107, 0, 0.1);
+  color: #c2410c;
+  padding: 0.15rem 0.4rem;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
